@@ -216,7 +216,7 @@ app.post('/comment', upload.array('images', 10), async (req, res) => {
       text
     });
     await comment.save();
-    res.status(201).send(comment);
+    res.send(comment);
   } catch (err) {
     res.send(err);
   }
@@ -276,7 +276,7 @@ app.post('/cart', async (req, res) => {
   try {
     const cart = new Cart(req.body);
     await cart.save();
-    res.status(201).send(cart);
+    res.send(cart);
   } catch (err) {
     res.send(err);
   }
@@ -321,5 +321,60 @@ app.delete('/cart/:id', async (req, res) => {
   }
 });
 
+// APIs for the order 
+app.post('/order', async (req, res) => {
+  try {
+    const { user, products, totalAmount, shippingAddress } = req.body;
+    const order = new Order({
+      user,
+      products,
+      totalAmount,
+      shippingAddress
+    });
+    await order.save();
+    res.send(order);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/orders', async (req, res) => {
+  try {
+    const orders = await Order.find().populate('user').populate('products.product');
+    res.send(orders);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/order/:id', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate('user').populate('products.product');
+    if (!order) return res.status(404).send('order not found');
+    res.send(order);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.put('/order/:id', async (req, res) => {
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!order) return res.status(404).send('order not found');
+    res.send(order);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.delete('/order/:id', async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) return res.status(404).send('order not found');
+    res.send('order deleted');
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
