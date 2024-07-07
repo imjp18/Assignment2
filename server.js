@@ -116,7 +116,7 @@ app.get('/product/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).send('product not found');
-    res.status(200).send(product);
+    res.send(product);
   } catch (err) {
     res.send(err);
   }
@@ -152,6 +152,57 @@ app.delete('/product/:id', async (req, res) => {
     res.send(err);
   }
 });
+
+// API for the user to perform CRUD operation
+app.post('/user', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.send(user);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.send(users);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    res.send(user);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.put('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!user) return res.status(404).send('User not found');
+    res.send(user);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.delete('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    res.send('User deleted');
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
