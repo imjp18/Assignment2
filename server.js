@@ -203,6 +203,123 @@ app.delete('/user/:id', async (req, res) => {
   }
 });
 
+//perform CRUD for comments
+app.post('/comment', upload.array('images', 10), async (req, res) => {
+  try {
+    const { product, user, rating, text } = req.body;
+    const images = req.files ? req.files.map(file => file.path) : [];
+    const comment = new Comment({
+      product,
+      user,
+      rating,
+      images,
+      text
+    });
+    await comment.save();
+    res.status(201).send(comment);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/comments', async (req, res) => {
+  try {
+    const comments = await Comment.find();
+    res.send(comments);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/comment/:id', async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) return res.status(404).send('Comment not found');
+    res.send(comment);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.put('/comment/:id', upload.array('images', 10), async (req, res) => {
+  try {
+    const { product, user, rating, text } = req.body;
+    const updateData = {
+      product,
+      user,
+      rating,
+      text
+    };
+    if (req.files) {
+      updateData.images = req.files.map(file => file.path);
+    }
+    const comment = await Comment.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    if (!comment) return res.status(404).send('Comment not found');
+    res.send(comment);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.delete('/comment/:id', async (req, res) => {
+  try {
+    const comment = await Comment.findByIdAndDelete(req.params.id);
+    if (!comment) return res.status(404).send('Comment not found');
+    res.send('Comment deleted');
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+// APIs for cart collection  
+app.post('/cart', async (req, res) => {
+  try {
+    const cart = new Cart(req.body);
+    await cart.save();
+    res.status(201).send(cart);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/carts', async (req, res) => {
+  try {
+    const carts = await Cart.find();
+    res.send(carts);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get('/cart/:id', async (req, res) => {
+  try {
+    const cart = await Cart.findById(req.params.id).populate('products').populate('user');
+    if (!cart) return res.status(404).send('cart not found');
+    res.send(cart);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.put('/cart/:id', async (req, res) => {
+  try {
+    const cart = await Cart.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!cart) return res.status(404).send('cart not found');
+    res.send(cart);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.delete('/cart/:id', async (req, res) => {
+  try {
+    const cart = await Cart.findByIdAndDelete(req.params.id);
+    if (!cart) return res.status(404).send('Cart not found');
+    res.send('cart deleted');
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
