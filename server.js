@@ -101,5 +101,57 @@ app.post('/product', upload.single('image'), async (req, res) => {
   }
 });
 
+//get all products
+app.get('/products', async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.send(products);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+//find a single product
+app.get('/product/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send('product not found');
+    res.status(200).send(product);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+//update product
+app.put('/product/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { description, pricing, shippingCost } = req.body;
+    const updateData = {
+      description,
+      pricing,
+      shippingCost
+    };
+    if (req.file) {
+      updateData.image = req.file.path;
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    if (!product) return res.status(404).send('product not found');
+    res.send(product);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+//delete product
+app.delete('/product/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).send('product not found');
+    res.send('product deleted');
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
