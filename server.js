@@ -59,5 +59,30 @@ const commentSchema = new mongoose.Schema({
 
 const Comment = mongoose.model('Comment', commentSchema);
 
+//cart schema and model
+const cartSchema = new mongoose.Schema({
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  quantities: [Number],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
+
+const Cart = mongoose.model('Cart', cartSchema);
+
+// order schema and model
+const orderSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  products: [{
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    quantity: Number,
+    price: Number
+  }],
+  totalAmount: Number,
+  shippingAddress: String,
+  orderDate: { type: Date, default: Date.now },
+  status: { type: String, default: 'Pending' }
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
