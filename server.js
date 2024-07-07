@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads'));
 
-const URI = '';
+const URI = 'mongodb+srv://userLab2:midsem@cluster0.urdbwfp.mongodb.net/Assignment2?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(URI)
   .then(() => console.log('connected to MongoDB'))
