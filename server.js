@@ -84,5 +84,22 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
+//post method to create a new product
+app.post('/product', upload.single('image'), async (req, res) => {
+  try {
+    const { description, pricing, shippingCost } = req.body;
+    const product = new Product({
+      description,
+      image: req.file ? req.file.path : '',
+      pricing,
+      shippingCost
+    });
+    await product.save();
+    res.send(product);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
