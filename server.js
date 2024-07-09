@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.json());
 
 //connect to MongoDB
-const URI = 'mongodb+srv://userLab2:midsem@cluster0.urdbwfp.mongodb.net/Assignment2?retryWrites=true&w=majority&appName=Cluster0';
+const URI = '';
 mongoose.connect(URI)
   .then(() => console.log('connected to MongoDB'))
   .catch(err => console.log(err));
